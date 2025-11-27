@@ -37,8 +37,8 @@ ParametrosGerador parametros;
     parametros.espacamento_lateral = (argc > 2) ? atoi(argv[2]) : padrao_espacamento_lateral;
     //fazendo o mesmo pro resto dos argumentos
     parametros.pixels_por_area = (argc > 3) ? atoi(argv[3]) : padrao_pixels_por_area;
-    parametros.altura_codigo = (argv > 4) ? atoi (argv[4]) : altura_padrao_codigo;
-    parametros.nome_arquivo = (argv > 5) ? argv [5] : nome_padrao_do_arquivo;
+    parametros.altura_codigo = (argc > 4) ? atoi (argv[4]) : altura_padrao_codigo;
+    parametros.nome_arquivo = (argc > 5) ? argv [5] : nome_padrao_do_arquivo;
 
 
     int largura_codigo;
@@ -68,7 +68,7 @@ ParametrosGerador parametros;
         char resposta;
 
         printf ("O arquivo '%s' ja existe, voce deseja sobrescrever ele? (s para sim / n para nao)", parametros.nome_arquivo);
-        scanf(" %c", resposta);
+        scanf(" %c", &resposta);
 
         if (resposta != 's'){
             //caso o usuario negue sobrescrever
@@ -95,32 +95,35 @@ ParametrosGerador parametros;
     }
 
     //escrever cabecalho PBM
-    fprinft(fp, "P1\n");
-    fprinft(fp, "%d %d\n", largura_total_imagem, altura_total_imagem);
+    fprintf(fp, "P1\n");
+    fprintf(fp, "%d %d\n", largura_total_imagem, altura_total_imagem);
 
                                /* MATRIZ*/
     //definindo limites
     //espacamento vertical = lateral
 
-    const int espacamento_vertical = parametros.espacamento_lateral;
     const int linha_inicio_codigo = espacamento_vertical;
     const int linha_fim_codigo = altura_total_imagem - espacamento_vertical;
 
     //desenhando a matriz loop
 
     for (int y = 0; y < altura_total_imagem; y++){
-        //logica vertical
+        //logica vertical espacamento em cima e em baixo
+        // se tiver na area do espacamento, escreve uma linha de 0
         if (y < linha_inicio_codigo || y >= linha_fim_codigo){
             for (int x = 0; x < largura_total_imagem; x++){
                 fprintf(fp, "0");
             }
         }
         else {
+            //          loop q percorre as colunas da imagem
            for (int x = 0; x < largura_total_imagem; x++){
             //logica horizontal
+            //
             if (x < parametros.espacamento_lateral || x >= (largura_total_imagem - parametros.espacamento_lateral)){
                 fprintf (fp, "0"); //escreve branco
             }
+            //             CODIGO DE BARRAS DE VERDADE
             else {
                 //zera o indice x no ponto onde o codigo de barras comeca
                 int indice_relativo = x - parametros.espacamento_lateral;
